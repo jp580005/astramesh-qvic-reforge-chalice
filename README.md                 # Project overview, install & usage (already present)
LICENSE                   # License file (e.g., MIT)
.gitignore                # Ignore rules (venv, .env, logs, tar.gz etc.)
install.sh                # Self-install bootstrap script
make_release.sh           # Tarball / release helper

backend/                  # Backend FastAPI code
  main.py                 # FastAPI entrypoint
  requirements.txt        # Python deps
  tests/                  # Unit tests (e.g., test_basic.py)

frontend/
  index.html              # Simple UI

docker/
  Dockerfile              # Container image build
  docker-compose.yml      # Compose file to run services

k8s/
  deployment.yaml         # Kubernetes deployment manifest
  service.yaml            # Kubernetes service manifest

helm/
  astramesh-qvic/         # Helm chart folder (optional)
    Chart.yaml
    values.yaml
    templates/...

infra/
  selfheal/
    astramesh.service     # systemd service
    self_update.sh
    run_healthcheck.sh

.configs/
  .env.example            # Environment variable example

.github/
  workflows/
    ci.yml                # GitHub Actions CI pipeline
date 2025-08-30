@@ -1,0 +1,40 @@
+README.md                 # Project overview, install & usage (already present)
+LICENSE                   # License file (e.g., MIT)
+.gitignore                # Ignore rules (venv, .env, logs, tar.gz etc.)
+install.sh                # Self-install bootstrap script
+make_release.sh           # Tarball / release helper
+
+backend/                  # Backend FastAPI code
+  main.py                 # FastAPI entrypoint
+  requirements.txt        # Python deps
+  tests/                  # Unit tests (e.g., test_basic.py)
+
+frontend/
+  index.html              # Simple UI
+
+docker/
+  Dockerfile              # Container image build
+  docker-compose.yml      # Compose file to run services
+
+k8s/
+  deployment.yaml         # Kubernetes deployment manifest
+  service.yaml            # Kubernetes service manifest
+
+helm/
+  astramesh-qvic/         # Helm chart folder (optional)
+    Chart.yaml
+    values.yaml
+    templates/...
+
+infra/
+  selfheal/
+    astramesh.service     # systemd service
+    self_update.sh
+    run_healthcheck.sh
+
+.configs/
+  .env.example            # Environment variable example
+
+.github/
+  workflows/
+    ci.yml                # GitHub Actions CI pipeline
