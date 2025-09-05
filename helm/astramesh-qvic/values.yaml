@@ -1,0 +1,108 @@
+# Default values for astramesh-qvic
+replicaCount: 2
+
+image:
+  repository: astramesh-qvic
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+  hosts:
+    - host: astramesh.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: astramesh-tls
+      hosts:
+        - astramesh.local
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Environment variables
+env:
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  LOG_LEVEL: "INFO"
+  HEALTH_CHECK_INTERVAL: "300"
+  MAX_RESTART_ATTEMPTS: "3"
+  RESTART_DELAY: "60"
+
+# Secrets (should be created separately)
+secrets:
+  twitterBearerToken: ""
+  twitterApiKey: ""
+  twitterApiSecret: ""
+  twitterAccessToken: ""
+  twitterAccessTokenSecret: ""
+  openaiApiKey: ""
+  secretKey: ""
+
+# Health checks
+healthCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3

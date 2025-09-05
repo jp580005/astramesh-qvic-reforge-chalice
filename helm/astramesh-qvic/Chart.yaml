@@ -1,0 +1,18 @@
+apiVersion: v2
+name: astramesh-qvic
+description: A Helm chart for AstraMesh QVic Reforge Chalice - AI-powered knowledge aggregator
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - ai
+  - knowledge-aggregator
+  - fastapi
+  - langchain
+  - twitter
+home: https://github.com/jp580005/astramesh-qvic
+sources:
+  - https://github.com/jp580005/astramesh-qvic
+maintainers:
+  - name: jp580005
+    email: jp580005@example.com

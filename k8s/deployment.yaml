@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astramesh-qvic
+  labels:
+    app: astramesh-qvic
+    version: v1.0.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: astramesh-qvic
+  template:
+    metadata:
+      labels:
+        app: astramesh-qvic
+    spec:
+      containers:
+      - name: astramesh
+        image: astramesh-qvic:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8000"
+        - name: PYTHONPATH
+          value: "/app/backend"
+        envFrom:
+        - secretRef:
+            name: astramesh-secrets
+        - configMapRef:
+            name: astramesh-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+      volumes:
+      - name: logs
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: astramesh-config
+data:
+  LOG_LEVEL: "INFO"
+  HEALTH_CHECK_INTERVAL: "300"
+  MAX_RESTART_ATTEMPTS: "3"
+  RESTART_DELAY: "60"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: astramesh-secrets
+type: Opaque
+stringData:
+  TWITTER_BEARER_TOKEN: "your_twitter_bearer_token_here"
+  TWITTER_API_KEY: "your_twitter_api_key_here"
+  TWITTER_API_SECRET: "your_twitter_api_secret_here"
+  TWITTER_ACCESS_TOKEN: "your_twitter_access_token_here"
+  TWITTER_ACCESS_TOKEN_SECRET: "your_twitter_access_token_secret_here"
+  OPENAI_API_KEY: "your_openai_api_key_here"
+  SECRET_KEY: "your_secret_key_here"
